@@ -8,6 +8,11 @@ timer_id = ''
 camera_dict = {}
 api_url = "https://data.goteborg.se/TrafficCamera/v1.0/TrafficCameras/2045abfc-4065-4741-a580-1755cbe3e245?format=json"
 
+class Users:
+    def __init__(self):
+        pass
+
+
 class ApiCon:
     def __init__(self):
         r = requests.get(api_url)
@@ -20,7 +25,7 @@ class ApiCon:
 
     def get_camera(self, camera_name):
         if camera_name in camera_dict:
-            r = requests(camera_dict.get(camera_name))
+            r = requests.get(camera_dict.get(camera_name))
             return r
         else:
             return None
@@ -52,10 +57,11 @@ class MainWindow:
 
     def show_camera(self, x):
         self.choice = self.clicked.get()
-        self.returned_image = ApiCon.get_camera(self.choice)
+        self.returned_image = api_con.get_camera(self.choice)
         self.image_data = self.returned_image.content
         self.image_data_processed = ImageTk.PhotoImage(Image.open(BytesIO(self.image_data)))
-        self.image_placeholder.configure(image=self.image_data_processed).pack()
+        self.image_placeholder.configure(image=self.image_data_processed)
+        self.image_placeholder.pack()
 
         self.countdown(10)
         self.window.mainloop()
@@ -71,6 +77,7 @@ class MainWindow:
         if count > 0:
             timer_id = self.window.after(1000, self.countdown, count-1)
         elif count == 0:
+            #Uppdatera bilden
             pass
 
 
