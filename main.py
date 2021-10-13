@@ -33,10 +33,19 @@ class ApiCon:
 
 class MainWindow:
     def __init__(self):
+        #Instansiera api-klassen här?
         self.window = tk.Tk()
         self.window.title("Gothenburg Traffic Cameras")
-        self.window.geometry("800x660")
-        self.window.eval('tk::PlaceWindow . center')
+
+        w = 800
+        h = 660
+        ws = self.window.winfo_screenwidth()
+        hs = self.window.winfo_screenheight()
+        x = (ws/2) - (w/2)
+        y = (hs/2) - (h/2)
+
+        self.window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
 
         self.image_placeholder = tk.Label(text="Image goes here", background="black", width=680, height=550)
         self.image_placeholder.pack_forget()
@@ -56,8 +65,8 @@ class MainWindow:
         self.window.mainloop()
 
     def show_camera(self, x):
-        self.choice = self.clicked.get()
-        self.returned_image = api_con.get_camera(self.choice)
+        choice = self.clicked.get()
+        self.returned_image = api_con.get_camera(choice)
         self.image_data = self.returned_image.content
         self.image_data_processed = ImageTk.PhotoImage(Image.open(BytesIO(self.image_data)))
         self.image_placeholder.configure(image=self.image_data_processed)
