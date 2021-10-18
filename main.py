@@ -29,7 +29,28 @@ class ApiCon:
 
 class ApiWindow:
     def __init__(self):
-        pass
+        self.api_window = tk.Tk()
+        self.api_window.title("Set API-Key")
+
+        api_window_width = 266
+        api_window_height = 160
+        ws = self.api_window.winfo_screenwidth()
+        hs = self.api_window.winfo_screenheight()
+        x = (ws/2) - (api_window_width/2)
+        y = (hs/2) - (api_window_height/2)
+
+        self.api_window.geometry('%dx%d+%d+%d' % (api_window_width, api_window_height, x, y))
+
+        api_textbox = tk.Text(self.api_window, height=6, width=30)
+        api_textbox.place(x=10, y=10)
+
+        close_button = tk.Button(self.api_window, text="Close", height=1, width=8, command=self.api_window.destroy)
+        close_button.place(x=100, y=122)
+
+        self.api_window.mainloop()
+
+        def save_and_close():
+            pass
 
 
 class MainWindow:
@@ -38,14 +59,14 @@ class MainWindow:
         self.window = tk.Tk()
         self.window.title("Gothenburg Traffic Cameras")
 
-        w = 800
-        h = 660
+        main_window_width = 800
+        main_window_height = 660
         ws = self.window.winfo_screenwidth()
         hs = self.window.winfo_screenheight()
-        x = (ws/2) - (w/2)
-        y = (hs/2) - (h/2)
+        x = (ws/2) - (main_window_width/2)
+        y = (hs/2) - (main_window_height/2)
 
-        self.window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.window.geometry('%dx%d+%d+%d' % (main_window_width, main_window_height, x, y))
 
 
         self.image_placeholder = tk.Label(text="Image goes here", background="black", width=680, height=550)
@@ -90,11 +111,10 @@ class MainWindow:
         if count > 0:
             timer_id = self.window.after(1000, self.countdown, count-1)
         elif count == 0:
-            #Uppdatera bilden
             self.show_camera(self)
 
     def manage_api_button(self):
-        pass
+        api_window = ApiWindow()
 
 api_con = ApiCon()
 main = MainWindow()
