@@ -4,24 +4,24 @@ from io import BytesIO
 import requests
 from PIL import Image, ImageTk
 
-timer_id = ''
-camera_dict = {}
-api_url = "https://data.goteborg.se/TrafficCamera/v1.0/TrafficCameras/2045abfc-4065-4741-a580-1755cbe3e245?format=json"
-
 
 class ApiCon:
-    def __init__(self):
-        r = requests.get(api_url)
+    def __init__(self, api_url):
+        self.api_url = api_url
+        self.camera_dict = {}
+
+    def load_cameras(self):
+        r = requests.get(self.api_url)
         if r.status_code == requests.codes.ok:
             r_parsed = json.loads(r.text)
             for i in r_parsed:
-                camera_dict[i['Name']] = i['CameraImageUrl']
+                self.camera_dict[i['Name']] = i['CameraImageUrl']
         else:
             print("Error")
 
     def get_camera_image(self, camera_name):
-        if camera_name in camera_dict:
-            r = requests.get(camera_dict.get(camera_name))
+        if camera_name in self.camera_dict:
+            r = requests.get(self.camera_dict.get(camera_name))
             return r
         else:
             return None
@@ -41,21 +41,29 @@ class ApiWindow:
 
         self.api_window.geometry('%dx%d+%d+%d' % (api_window_width, api_window_height, x, y))
 
-        api_textbox = tk.Text(self.api_window, height=6, width=30)
-        api_textbox.place(x=10, y=10)
+        self.api_textbox = tk.Text(self.api_window, height=6, width=30)
+        self.api_textbox.insert(1.0, api_url)
+        self.api_textbox.place(x=10, y=10)
 
-        close_button = tk.Button(self.api_window, text="Close", height=1, width=8, command=self.api_window.destroy)
-        close_button.place(x=100, y=122)
+        self.close_button = tk.Button(self.api_window, text="Close", height=1, width=8, command=self.close_button)
+        self.close_button.place(x=100, y=122)
 
         self.api_window.mainloop()
 
-        def save_and_close():
-            pass
+    def close_button(self):
+        global api_url
+        api_url = self.api_textbox.get("1.0", "end-1c")
+
+        api_con = ApiCon.load_cameras(api_url)
+
+        self.api_window.destroy()
+
+
 
 
 class MainWindow:
     def __init__(self):
-        #Instansiera api-klassen här?
+
         self.window = tk.Tk()
         self.window.title("Gothenburg Traffic Cameras")
 
@@ -68,13 +76,12 @@ class MainWindow:
 
         self.window.geometry('%dx%d+%d+%d' % (main_window_width, main_window_height, x, y))
 
-
         self.image_placeholder = tk.Label(text="Image goes here", background="black", width=680, height=550)
         self.image_placeholder.pack_forget()
 
         self.clicked = tk.StringVar()
         self.clicked.set("Select a camera")
-        self.dropdown = tk.OptionMenu(self.window, self.clicked, *camera_dict.keys(), command=self.show_camera)
+        self.dropdown = tk.OptionMenu(self.window, self.clicked, *api_con.camera_dict.keys(), command=self.show_camera)
         self.dropdown.place(x=54, y=600)
 
         self.api_button = tk.Button(self.window, text="Manage API-key", height=1, width=13, command=self.manage_api_button)
@@ -97,7 +104,7 @@ class MainWindow:
         self.image_placeholder.configure(image=self.image_data_processed)
         self.image_placeholder.pack()
 
-        self.countdown(45)
+        self.countdown(60)
         self.window.mainloop()
 
     def countdown(self, count):
@@ -116,5 +123,8 @@ class MainWindow:
     def manage_api_button(self):
         api_window = ApiWindow()
 
-api_con = ApiCon()
+
+api_con = ApiCon("https://data.goteborg.se/TrafficCamera/v1.0/TrafficCameras/2045abfc-4065-4741-a580-1755cbe3e245?format=json")
+api_con.load_cameras()
 main = MainWindow()
+
