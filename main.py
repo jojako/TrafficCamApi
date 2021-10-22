@@ -42,7 +42,12 @@ class ApiWindow:
         self.api_window.geometry('%dx%d+%d+%d' % (api_window_width, api_window_height, x, y))
 
         self.api_textbox = tk.Text(self.api_window, height=6, width=30)
-        self.api_textbox.insert(1.0, api_url)
+
+        try:
+            self.api_textbox.insert(1.0, api_con.api_url)
+        except:
+            pass
+
         self.api_textbox.place(x=10, y=10)
 
         self.close_button = tk.Button(self.api_window, text="Close", height=1, width=8, command=self.close_button)
@@ -51,14 +56,19 @@ class ApiWindow:
         self.api_window.mainloop()
 
     def close_button(self):
-        global api_url
-        api_url = self.api_textbox.get("1.0", "end-1c")
+        entered_api_url = self.api_textbox.get("1.0", "end-1c")
 
-        api_con = ApiCon.load_cameras(api_url)
+        if entered_api_url:
+            with open('api.txt', 'w') as f:
+                f.write(entered_api_url)
 
-        self.api_window.destroy()
+            global api_con
+            api_con = ApiCon(entered_api_url)
+            api_con.load_cameras()
 
+            #Check if window open
 
+            self.api_window.destroy()
 
 
 class MainWindow:
@@ -124,7 +134,18 @@ class MainWindow:
         api_window = ApiWindow()
 
 
-api_con = ApiCon("https://data.goteborg.se/TrafficCamera/v1.0/TrafficCameras/2045abfc-4065-4741-a580-1755cbe3e245?format=json")
-api_con.load_cameras()
-main = MainWindow()
+def start_up():
+    try:
+        with open('api.txt', 'r') as f:
+            f_content = f.readline()
+            global api_con
+            api_con = ApiCon(f_content)
+            api_con.load_cameras()
+            main = MainWindow()
+    except:
+        api_window = ApiWindow()
 
+#api_con = ApiCon("https://data.goteborg.se/TrafficCamera/v1.0/TrafficCameras/2045abfc-4065-4741-a580-1755cbe3e245?format=json")
+#api_con.load_cameras()
+#main = MainWindow()
+start_up()
