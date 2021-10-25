@@ -28,7 +28,9 @@ class ApiCon:
 
 
 class ApiWindow:
-    def __init__(self):
+    def __init__(self, is_main_opened):
+        self.main_opened = is_main_opened
+
         self.api_window = tk.Tk()
         self.api_window.title("Set API-Key")
 
@@ -65,12 +67,14 @@ class ApiWindow:
             global api_con
             api_con = ApiCon(entered_api_url)
             api_con.load_cameras()
-
             self.api_window.destroy()
-
-            if first_startup:
-                global main
+            if not self.main_opened:
+                self.main_opened = True
                 main = MainWindow()
+
+
+
+
 
 
 class MainWindow:
@@ -133,7 +137,7 @@ class MainWindow:
             self.show_camera(self)
 
     def manage_api_button(self):
-        api_window = ApiWindow()
+        api_window = ApiWindow(True)
 
 
 def start_up():
@@ -144,11 +148,9 @@ def start_up():
             api_con = ApiCon(f_content)
             api_con.load_cameras()
             main = MainWindow()
-
     except:
-        api_window = ApiWindow()
-        first_startup = True
+        api_window = ApiWindow(False)
 
 
-first_startup = False
+first_startup = None
 start_up()
