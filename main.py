@@ -73,10 +73,6 @@ class ApiWindow:
                 main = MainWindow()
 
 
-
-
-
-
 class MainWindow:
     def __init__(self):
 
@@ -152,5 +148,4 @@ def start_up():
         api_window = ApiWindow(False)
 
 
-first_startup = None
 start_up()
