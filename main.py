@@ -66,9 +66,11 @@ class ApiWindow:
             api_con = ApiCon(entered_api_url)
             api_con.load_cameras()
 
-            #Check if window open
-
             self.api_window.destroy()
+
+            if first_startup:
+                global main
+                main = MainWindow()
 
 
 class MainWindow:
@@ -142,10 +144,11 @@ def start_up():
             api_con = ApiCon(f_content)
             api_con.load_cameras()
             main = MainWindow()
+
     except:
         api_window = ApiWindow()
+        first_startup = True
 
-#api_con = ApiCon("https://data.goteborg.se/TrafficCamera/v1.0/TrafficCameras/2045abfc-4065-4741-a580-1755cbe3e245?format=json")
-#api_con.load_cameras()
-#main = MainWindow()
+
+first_startup = False
 start_up()
