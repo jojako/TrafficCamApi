@@ -85,6 +85,10 @@ class ApiWindow:
 
         self.api_window.mainloop()
 
+    def write_to_file(self, input):
+        with open('api.txt', 'w') as f:
+            f.write(input)
+
     def close_button(self):
         entered_api_url = self.api_textbox.get("1.0", "end-1c")
 
@@ -92,8 +96,7 @@ class ApiWindow:
             if not entered_api_url.startswith("https://"):
                 ErrorWindow("Please enter valid URL")
             else:
-                with open('api.txt', 'w') as f:
-                    f.write(entered_api_url)
+                self.write_to_file(entered_api_url)
 
                 global api_con
                 api_con = ApiCon(entered_api_url)

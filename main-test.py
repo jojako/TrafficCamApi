@@ -1,5 +1,6 @@
 import unittest
 from main import *
+import os
 
 
 class UnitTest(unittest.TestCase):
@@ -12,12 +13,21 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(self.test_error_mess.error_input, "Error message")
 
     def test3(self):
-        self.
+        self.test_write = ApiWindow.write_to_file(self, "Test")
+        try:
+            f = open('api.txt')
+            f.close()
+            os.remove('api.txt')
+        except:
+            pass
 
     def test4(self):
-        pass
+        self.apitestw = ApiWindow(True)
+        self.assertTrue(self.apitestw.main_opened)
+
     def test5(self):
-        pass
+        self.test_url = ApiCon("http://www.api.com")
+        self.assertEqual(self.test_url.api_url, "http://www.api.com")
 
 if __name__ == '__main__':
     unittest.main()
