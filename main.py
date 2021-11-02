@@ -5,6 +5,34 @@ import requests
 from PIL import Image, ImageTk
 
 
+class ErrorWindow:
+    def __init__(self, error_input):
+        self.error_input = error_input
+
+        self.error_window = tk.Tk()
+        self.error_window.title("Error")
+
+        error_window_width = 250
+        error_window_height = 100
+        ws = self.error_window.winfo_screenwidth()
+        hs = self.error_window.winfo_screenheight()
+        x = (ws/2) - (error_window_width/2)
+        y = (hs/2) - (error_window_height/2)
+
+        self.error_window.geometry('%dx%d+%d+%d' % (error_window_width, error_window_height, x, y))
+
+        self.close_button = tk.Button(self.error_window, text="Close", height=1, width=8, command=self.close_button)
+        self.close_button.place(x=90, y=70)
+
+        self.error_text = tk.Label(self.error_window, text=self.error_input)
+        self.error_text.place(relx=.5, rely=.3, anchor="center")
+
+        self.error_window.mainloop()
+
+    def close_button(self):
+        self.error_window.destroy()
+
+
 class ApiCon:
     def __init__(self, api_url):
         self.api_url = api_url
@@ -61,16 +89,19 @@ class ApiWindow:
         entered_api_url = self.api_textbox.get("1.0", "end-1c")
 
         if entered_api_url:
-            with open('api.txt', 'w') as f:
-                f.write(entered_api_url)
+            if not entered_api_url.startswith("https://"):
+                ErrorWindow("Please enter valid URL")
+            else:
+                with open('api.txt', 'w') as f:
+                    f.write(entered_api_url)
 
-            global api_con
-            api_con = ApiCon(entered_api_url)
-            api_con.load_cameras()
-            self.api_window.destroy()
-            if not self.main_opened:
-                self.main_opened = True
-                main = MainWindow()
+                global api_con
+                api_con = ApiCon(entered_api_url)
+                api_con.load_cameras()
+                self.api_window.destroy()
+                if not self.main_opened:
+                    self.main_opened = True
+                    main = MainWindow()
 
 
 class MainWindow:
@@ -149,3 +180,4 @@ def start_up():
 
 
 start_up()
+
